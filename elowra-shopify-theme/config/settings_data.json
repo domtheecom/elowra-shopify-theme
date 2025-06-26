@@ -1,0 +1,52 @@
+{
+  "current": {
+    "color_sage_primary": "#4A5D23",
+    "color_sage_light": "#f8faf8",
+    "color_text": "#111827",
+    "color_background": "#ffffff",
+    "type_header_font": "inter_n4",
+    "type_body_font": "inter_n4",
+    "sections": {
+      "header": {
+        "type": "header",
+        "settings": {
+          "menu": "main-menu"
+        }
+      },
+      "footer": {
+        "type": "footer",
+        "settings": {
+          "column1_title": "About ELOWRA",
+          "column1_content": "<p>Premium skincare for sensitive skin. Our 3-step ritual transforms your skin with gentle, effective formulations.</p>",
+          "column2_title": "Quick Links",
+          "column3_title": "Contact",
+          "column3_content": "hello@elowra.com\n(555) 123-4567"
+        },
+        "blocks": {
+          "link1": {
+            "type": "link",
+            "settings": {
+              "text": "About",
+              "url": "/pages/about"
+            }
+          },
+          "link2": {
+            "type": "link", 
+            "settings": {
+              "text": "FAQ",
+              "url": "/pages/faq"
+            }
+          },
+          "link3": {
+            "type": "link",
+            "settings": {
+              "text": "Contact",
+              "url": "/pages/contact"
+            }
+          }
+        },
+        "block_order": ["link1", "link2", "link3"]
+      }
+    }
+  }
+}
