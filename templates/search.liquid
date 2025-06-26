@@ -1,0 +1,521 @@
+{% paginate search.results by 12 %}
+
+<div class="search-page">
+  <div class="search-header">
+    <div class="container">
+      <h1 class="search-title">
+        {% if search.performed %}
+          {% if search.results_count > 0 %}
+            {{ search.results_count }} result{% unless search.results_count == 1 %}s{% endunless %} for "{{ search.terms }}"
+          {% else %}
+            No results for "{{ search.terms }}"
+          {% endif %}
+        {% else %}
+          Search
+        {% endif %}
+      </h1>
+      
+      <form action="{{ routes.search_url }}" method="get" class="search-form">
+        <div class="search-input-container">
+          <input 
+            type="search" 
+            name="q" 
+            placeholder="Search products, articles, and pages..." 
+            class="search-input"
+            value="{{ search.terms | escape }}"
+            autofocus>
+          <button type="submit" class="search-button">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="11" cy="11" r="8"/>
+              <path d="M21 21l-4.35-4.35"/>
+            </svg>
+            Search
+          </button>
+        </div>
+        
+        <div class="search-filters">
+          <label class="filter-option">
+            <input type="radio" name="type" value="" {% unless search.types contains 'product' or search.types contains 'article' or search.types contains 'page' %}checked{% endunless %}>
+            <span>All</span>
+          </label>
+          <label class="filter-option">
+            <input type="radio" name="type" value="product" {% if search.types contains 'product' %}checked{% endif %}>
+            <span>Products</span>
+          </label>
+          <label class="filter-option">
+            <input type="radio" name="type" value="article" {% if search.types contains 'article' %}checked{% endif %}>
+            <span>Articles</span>
+          </label>
+          <label class="filter-option">
+            <input type="radio" name="type" value="page" {% if search.types contains 'page' %}checked{% endif %}>
+            <span>Pages</span>
+          </label>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="search-content">
+    <div class="container">
+      {% if search.performed %}
+        {% if search.results.size > 0 %}
+          <div class="search-results">
+            {% for item in search.results %}
+              {% case item.object_type %}
+                {% when 'product' %}
+                  <div class="search-result product-result">
+                    <div class="result-image">
+                      <a href="{{ item.url }}">
+                        <img src="{{ item.featured_image | image_url: width: 150 }}" alt="{{ item.title }}">
+                      </a>
+                    </div>
+                    <div class="result-content">
+                      <div class="result-type">Product</div>
+                      <h3 class="result-title">
+                        <a href="{{ item.url }}">{{ item.title }}</a>
+                      </h3>
+                      <div class="result-price">{{ item.price | money }}</div>
+                      <p class="result-description">{{ item.description | strip_html | truncate: 120 }}</p>
+                      <div class="result-actions">
+                        <a href="{{ item.url }}" class="btn btn-primary">View Product</a>
+                      </div>
+                    </div>
+                  </div>
+
+                {% when 'article' %}
+                  <div class="search-result article-result">
+                    {% if item.image %}
+                      <div class="result-image">
+                        <a href="{{ item.url }}">
+                          <img src="{{ item.image | image_url: width: 150 }}" alt="{{ item.title }}">
+                        </a>
+                      </div>
+                    {% endif %}
+                    <div class="result-content">
+                      <div class="result-type">Article</div>
+                      <h3 class="result-title">
+                        <a href="{{ item.url }}">{{ item.title }}</a>
+                      </h3>
+                      <div class="result-meta">
+                        <time datetime="{{ item.published_at | date: '%Y-%m-%d' }}">
+                          {{ item.published_at | date: '%B %d, %Y' }}
+                        </time>
+                        <span class="read-time">{{ item.content | strip_html | split: ' ' | size | divided_by: 200 | plus: 1 }} min read</span>
+                      </div>
+                      <p class="result-description">{{ item.summary | strip_html | truncate: 120 }}</p>
+                      <div class="result-actions">
+                        <a href="{{ item.url }}" class="read-more">Read Article →</a>
+                      </div>
+                    </div>
+                  </div>
+
+                {% when 'page' %}
+                  <div class="search-result page-result">
+                    <div class="result-content">
+                      <div class="result-type">Page</div>
+                      <h3 class="result-title">
+                        <a href="{{ item.url }}">{{ item.title }}</a>
+                      </h3>
+                      <p class="result-description">{{ item.content | strip_html | truncate: 120 }}</p>
+                      <div class="result-actions">
+                        <a href="{{ item.url }}" class="read-more">View Page →</a>
+                      </div>
+                    </div>
+                  </div>
+
+                {% else %}
+                  <div class="search-result">
+                    <div class="result-content">
+                      <h3 class="result-title">
+                        <a href="{{ item.url }}">{{ item.title }}</a>
+                      </h3>
+                      <p class="result-description">{{ item.content | strip_html | truncate: 120 }}</p>
+                    </div>
+                  </div>
+              {% endcase %}
+            {% endfor %}
+          </div>
+
+          {% if paginate.pages > 1 %}
+            <nav class="pagination" role="navigation" aria-label="Search Pagination">
+              {% if paginate.previous %}
+                <a href="{{ paginate.previous.url }}" class="pagination-link">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="15,18 9,12 15,6"></polyline>
+                  </svg>
+                  Previous
+                </a>
+              {% endif %}
+              
+              {% for part in paginate.parts %}
+                {% if part.is_link %}
+                  <a href="{{ part.url }}" class="pagination-link">{{ part.title }}</a>
+                {% else %}
+                  {% if part.title == paginate.current_page %}
+                    <span class="pagination-link current">{{ part.title }}</span>
+                  {% else %}
+                    <span class="pagination-link">{{ part.title }}</span>
+                  {% endif %}
+                {% endif %}
+              {% endfor %}
+              
+              {% if paginate.next %}
+                <a href="{{ paginate.next.url }}" class="pagination-link">
+                  Next
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="9,18 15,12 9,6"></polyline>
+                  </svg>
+                </a>
+              {% endif %}
+            </nav>
+          {% endif %}
+        {% else %}
+          <div class="no-results">
+            <div class="no-results-content">
+              <svg width="100" height="100" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+                <circle cx="11" cy="11" r="8"/>
+                <path d="M21 21l-4.35-4.35"/>
+                <path d="M11 8v3"/>
+                <path d="M11 16h.01"/>
+              </svg>
+              <h2>No results found</h2>
+              <p>We couldn't find anything matching "{{ search.terms }}". Try different keywords or browse our popular products below.</p>
+            </div>
+          </div>
+          
+          <div class="search-suggestions">
+            <h3>Popular Products</h3>
+            <div class="suggested-products">
+              {% assign popular_products = collections['ritual-kit'].products %}
+              {% for product in popular_products limit: 3 %}
+                <div class="suggested-product">
+                  <a href="{{ product.url }}">
+                    <img src="{{ product.featured_image | image_url: width: 200 }}" alt="{{ product.title }}">
+                    <h4>{{ product.title }}</h4>
+                    <span class="price">{{ product.price | money }}</span>
+                  </a>
+                </div>
+              {% endfor %}
+            </div>
+          </div>
+        {% endif %}
+      {% else %}
+        <div class="search-intro">
+          <h2>What are you looking for?</h2>
+          <p>Search our complete collection of skincare products, helpful articles, and information pages.</p>
+          
+          <div class="search-categories">
+            <div class="category-card">
+              <h3>Products</h3>
+              <p>Find the perfect skincare products for your needs</p>
+              <a href="{{ collections.all.url }}" class="btn btn-outline">Browse All Products</a>
+            </div>
+            <div class="category-card">
+              <h3>Articles</h3>
+              <p>Learn about skincare tips and ingredient science</p>
+              <a href="/blogs/skincare-tips" class="btn btn-outline">Read Articles</a>
+            </div>
+            <div class="category-card">
+              <h3>Support</h3>
+              <p>Get answers to frequently asked questions</p>
+              <a href="/pages/faq" class="btn btn-outline">View FAQ</a>
+            </div>
+          </div>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<style>
+.search-page {
+  padding: 40px 0 80px;
+}
+
+.search-header {
+  background: var(--sage-50);
+  padding: 60px 0;
+  margin-bottom: 60px;
+}
+
+.search-title {
+  font-size: 36px;
+  font-weight: 700;
+  margin-bottom: 32px;
+  color: var(--gray-900);
+  text-align: center;
+}
+
+.search-form {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.search-input-container {
+  display: flex;
+  margin-bottom: 20px;
+}
+
+.search-input {
+  flex: 1;
+  padding: 16px 20px;
+  border: 1px solid var(--gray-300);
+  border-radius: 12px 0 0 12px;
+  font-size: 16px;
+}
+
+.search-button {
+  padding: 16px 24px;
+  background: var(--sage-500);
+  color: white;
+  border: none;
+  border-radius: 0 12px 12px 0;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+  transition: var(--transition);
+}
+
+.search-button:hover {
+  background: var(--sage-600);
+}
+
+.search-filters {
+  display: flex;
+  justify-content: center;
+  gap: 24px;
+}
+
+.filter-option {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.filter-option input {
+  margin: 0;
+}
+
+.search-results {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+.search-result {
+  display: flex;
+  gap: 24px;
+  padding: 24px;
+  background: white;
+  border: 1px solid var(--gray-200);
+  border-radius: 12px;
+  transition: var(--transition);
+}
+
+.search-result:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.result-image {
+  flex-shrink: 0;
+}
+
+.result-image img {
+  width: 120px;
+  height: 120px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+.result-content {
+  flex: 1;
+}
+
+.result-type {
+  font-size: 12px;
+  color: var(--sage-500);
+  text-transform: uppercase;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.result-title {
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.result-title a {
+  color: var(--gray-900);
+  text-decoration: none;
+}
+
+.result-title a:hover {
+  color: var(--sage-500);
+}
+
+.result-price {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--gray-900);
+  margin-bottom: 8px;
+}
+
+.result-meta {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 8px;
+  font-size: 14px;
+  color: var(--gray-600);
+}
+
+.result-description {
+  color: var(--gray-700);
+  line-height: 1.6;
+  margin-bottom: 16px;
+}
+
+.result-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.read-more {
+  color: var(--sage-500);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.no-results {
+  text-align: center;
+  padding: 80px 20px;
+}
+
+.no-results-content svg {
+  color: var(--gray-300);
+  margin-bottom: 24px;
+}
+
+.no-results h2 {
+  font-size: 24px;
+  margin-bottom: 16px;
+  color: var(--gray-900);
+}
+
+.search-suggestions {
+  margin-top: 60px;
+}
+
+.search-suggestions h3 {
+  font-size: 24px;
+  font-weight: 600;
+  margin-bottom: 32px;
+  color: var(--gray-900);
+  text-align: center;
+}
+
+.suggested-products {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 32px;
+}
+
+.suggested-product {
+  text-align: center;
+}
+
+.suggested-product a {
+  text-decoration: none;
+  color: inherit;
+}
+
+.suggested-product img {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  border-radius: 8px;
+  margin-bottom: 12px;
+}
+
+.suggested-product h4 {
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: var(--gray-900);
+}
+
+.suggested-product .price {
+  font-weight: 700;
+  color: var(--sage-500);
+}
+
+.search-intro {
+  text-align: center;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.search-intro h2 {
+  font-size: 32px;
+  font-weight: 700;
+  margin-bottom: 16px;
+  color: var(--gray-900);
+}
+
+.search-intro p {
+  font-size: 18px;
+  color: var(--gray-600);
+  margin-bottom: 60px;
+}
+
+.search-categories {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 32px;
+}
+
+.category-card {
+  padding: 32px;
+  background: white;
+  border: 1px solid var(--gray-200);
+  border-radius: 12px;
+  text-align: center;
+}
+
+.category-card h3 {
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 12px;
+  color: var(--gray-900);
+}
+
+.category-card p {
+  color: var(--gray-600);
+  margin-bottom: 20px;
+}
+
+@media (max-width: 768px) {
+  .search-result {
+    flex-direction: column;
+  }
+  
+  .result-image img {
+    width: 100%;
+    height: 200px;
+  }
+  
+  .search-filters {
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+  
+  .search-categories {
+    grid-template-columns: 1fr;
+  }
+}
+</style>
+
+{% endpaginate %}

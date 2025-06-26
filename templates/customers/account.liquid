@@ -1,0 +1,144 @@
+<div class="account-page">
+  <div class="container">
+    <div class="account-header">
+      <h1>My Account</h1>
+      <p>Welcome back, {{ customer.first_name }}!</p>
+    </div>
+
+    <div class="account-content">
+      <div class="account-sidebar">
+        <nav class="account-nav">
+          <a href="#profile" class="nav-link active" onclick="showSection('profile')">Profile</a>
+          <a href="#orders" class="nav-link" onclick="showSection('orders')">Orders</a>
+          <a href="#addresses" class="nav-link" onclick="showSection('addresses')">Addresses</a>
+          <a href="#subscription" class="nav-link" onclick="showSection('subscription')">Subscription</a>
+        </nav>
+        <a href="{{ routes.account_logout_url }}" class="logout-link">Sign Out</a>
+      </div>
+
+      <div class="account-main">
+        <div id="profile-section" class="account-section active">
+          <h2>Profile Information</h2>
+          <div class="profile-info">
+            <div class="info-group">
+              <label>Name</label>
+              <p>{{ customer.first_name }} {{ customer.last_name }}</p>
+            </div>
+            <div class="info-group">
+              <label>Email</label>
+              <p>{{ customer.email }}</p>
+            </div>
+            <div class="info-group">
+              <label>Account Created</label>
+              <p>{{ customer.created_at | date: '%B %d, %Y' }}</p>
+            </div>
+          </div>
+          <a href="{{ routes.account_url }}/edit" class="btn btn-primary">Edit Profile</a>
+        </div>
+
+        <div id="orders-section" class="account-section">
+          <h2>Order History</h2>
+          {% if customer.orders.size > 0 %}
+            <div class="orders-list">
+              {% for order in customer.orders %}
+                <div class="order-card">
+                  <div class="order-header">
+                    <div class="order-number">Order #{{ order.name }}</div>
+                    <div class="order-date">{{ order.created_at | date: '%B %d, %Y' }}</div>
+                  </div>
+                  <div class="order-status">
+                    <span class="status-badge status-{{ order.financial_status }}">
+                      {{ order.financial_status | capitalize }}
+                    </span>
+                  </div>
+                  <div class="order-total">{{ order.total_price | money }}</div>
+                  <div class="order-actions">
+                    <a href="{{ order.customer_url }}" class="btn btn-outline">View Details</a>
+                  </div>
+                </div>
+              {% endfor %}
+            </div>
+          {% else %}
+            <div class="empty-state">
+              <p>You haven't placed any orders yet.</p>
+              <a href="{{ collections.all.url }}" class="btn btn-primary">Start Shopping</a>
+            </div>
+          {% endif %}
+        </div>
+
+        <div id="addresses-section" class="account-section">
+          <h2>Saved Addresses</h2>
+          {% if customer.addresses.size > 0 %}
+            <div class="addresses-grid">
+              {% for address in customer.addresses %}
+                <div class="address-card">
+                  {% if address == customer.default_address %}
+                    <div class="default-badge">Default</div>
+                  {% endif %}
+                  <div class="address-content">
+                    <p><strong>{{ address.first_name }} {{ address.last_name }}</strong></p>
+                    <p>{{ address.address1 }}</p>
+                    {% if address.address2 != blank %}
+                      <p>{{ address.address2 }}</p>
+                    {% endif %}
+                    <p>{{ address.city }}, {{ address.province }} {{ address.zip }}</p>
+                    <p>{{ address.country }}</p>
+                  </div>
+                </div>
+              {% endfor %}
+            </div>
+          {% else %}
+            <div class="empty-state">
+              <p>No saved addresses yet.</p>
+            </div>
+          {% endif %}
+        </div>
+
+        <div id="subscription-section" class="account-section">
+          <h2>Subscription Management</h2>
+          <div class="subscription-info">
+            <div class="subscription-card">
+              <h3>Active Subscription</h3>
+              <p>You're currently subscribed to receive ELOWRA products every 30 days with a 15% discount.</p>
+              <div class="subscription-details">
+                <div class="detail-item">
+                  <span>Next Delivery:</span>
+                  <span>{{ 'now' | date: '%s' | plus: 2592000 | date: '%B %d, %Y' }}</span>
+                </div>
+                <div class="detail-item">
+                  <span>Frequency:</span>
+                  <span>Every 30 days</span>
+                </div>
+                <div class="detail-item">
+                  <span>Discount:</span>
+                  <span>15% off</span>
+                </div>
+              </div>
+              <div class="subscription-actions">
+                <button class="btn btn-outline">Skip Next Order</button>
+                <button class="btn btn-secondary">Modify Subscription</button>
+                <button class="btn btn-danger">Cancel Subscription</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+function showSection(sectionName) {
+  document.querySelectorAll('.account-section').forEach(section => {
+    section.classList.remove('active');
+  });
+  
+  document.querySelectorAll('.nav-link').forEach(link => {
+    link.classList.remove('active');
+  });
+  
+  document.getElementById(sectionName + '-section').classList.add('active');
+  
+  event.target.classList.add('active');
+}
+</script>

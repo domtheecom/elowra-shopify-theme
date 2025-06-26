@@ -1,0 +1,56 @@
+<div class="customer-page">
+  <div class="container">
+    <div class="customer-form-wrapper">
+      <div class="customer-form-header">
+        <h1>Welcome Back</h1>
+        <p>Sign in to your ELOWRA account</p>
+      </div>
+
+      {% form 'customer_login', class: 'customer-form' %}
+        {% if form.errors %}
+          <div class="form-errors">
+            <h4>Please correct the following:</h4>
+            <ul>
+              {% for error in form.errors %}
+                <li>{{ error | capitalize }}</li>
+              {% endfor %}
+            </ul>
+          </div>
+        {% endif %}
+
+        <div class="form-group">
+          <label for="customer-email">Email Address</label>
+          <input 
+            type="email" 
+            id="customer-email" 
+            name="customer[email]" 
+            value="{{ form.email }}"
+            autocomplete="email"
+            required>
+        </div>
+
+        <div class="form-group">
+          <label for="customer-password">Password</label>
+          <input 
+            type="password" 
+            id="customer-password" 
+            name="customer[password]"
+            autocomplete="current-password"
+            required>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-large">Sign In</button>
+
+        <div class="form-links">
+          <a href="{{ routes.account_recover_url }}">Forgot your password?</a>
+        </div>
+      {% endform %}
+
+      <div class="form-divider">
+        <span>New to ELOWRA?</span>
+      </div>
+
+      <a href="{{ routes.account_register_url }}" class="btn btn-secondary btn-large">Create Account</a>
+    </div>
+  </div>
+</div>

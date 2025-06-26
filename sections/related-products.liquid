@@ -1,0 +1,91 @@
+<div class="related-products">
+  <div class="related-products-grid">
+    {% assign related_products = collections['ritual-kit'].products | where: 'id', '!=', product.id %}
+    {% for related_product in related_products limit: 3 %}
+      <div class="related-product-card">
+        {% if related_product.metafields.custom.step_number %}
+          <div class="step-number">{{ related_product.metafields.custom.step_number }}</div>
+        {% endif %}
+        
+        <div class="product-image">
+          <a href="{{ related_product.url }}">
+            <img src="{{ related_product.featured_image | image_url: width: 300 }}" alt="{{ related_product.title }}">
+          </a>
+        </div>
+        
+        <div class="product-info">
+          <h3 class="product-title">
+            <a href="{{ related_product.url }}">{{ related_product.title }}</a>
+          </h3>
+          
+          <p class="product-description">{{ related_product.description | strip_html | truncate: 80 }}</p>
+          
+          <div class="product-price">
+            <span class="price-current">{{ related_product.price | money }}</span>
+            {% if related_product.compare_at_price > related_product.price %}
+              <span class="price-original">{{ related_product.compare_at_price | money }}</span>
+            {% endif %}
+          </div>
+          
+          <div class="product-rating">
+            {% assign rating = related_product.metafields.custom.average_rating | default: 5 %}
+            {% for i in (1..5) %}
+              {% if i <= rating %}
+                <svg class="star star-filled" width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                </svg>
+              {% else %}
+                <svg class="star" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                </svg>
+              {% endif %}
+            {% endfor %}
+            <span class="rating-count">({{ related_product.metafields.custom.review_count | default: 95 }})</span>
+          </div>
+          
+          <a href="{{ related_product.url }}" class="btn btn-outline">View Product</a>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+  
+  {% if collections['ritual-kit'].products.size > 1 %}
+    <div class="complete-kit-cta">
+      <div class="kit-offer">
+        <div class="kit-content">
+          <h3>Get the Complete Ritual Kit</h3>
+          <p>Save $36 when you purchase all three products together</p>
+          <div class="kit-pricing">
+            <span class="kit-price">$89.00</span>
+            <span class="kit-original">$125.00</span>
+            <span class="kit-savings">Save $36</span>
+          </div>
+        </div>
+        <a href="/products/ritual-kit" class="btn btn-primary">Shop Complete Kit</a>
+      </div>
+    </div>
+  {% endif %}
+</div>
+
+{% schema %}
+{
+  "name": "Related Products",
+  "settings": [
+    {
+      "type": "collection",
+      "id": "related_collection",
+      "label": "Related products collection",
+      "default": "ritual-kit"
+    },
+    {
+      "type": "range",
+      "id": "products_to_show",
+      "min": 2,
+      "max": 6,
+      "step": 1,
+      "label": "Products to show",
+      "default": 3
+    }
+  ]
+}
+{% endschema %}

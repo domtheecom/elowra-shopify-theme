@@ -1,0 +1,169 @@
+{% paginate collection.products by 12 %}
+
+<div class="collection-page">
+  <div class="collection-header">
+    <div class="container">
+      <h1 class="collection-title">{{ collection.title }}</h1>
+      {% if collection.description != blank %}
+        <div class="collection-description">
+          {{ collection.description }}
+        </div>
+      {% endif %}
+      
+      <div class="collection-filters">
+        <div class="sort-by">
+          <label for="sort-by">Sort by:</label>
+          <select id="sort-by" onchange="sortProducts(this.value)">
+            <option value="manual">Featured</option>
+            <option value="best-selling">Best Selling</option>
+            <option value="title-ascending">Name: A-Z</option>
+            <option value="title-descending">Name: Z-A</option>
+            <option value="price-ascending">Price: Low to High</option>
+            <option value="price-descending">Price: High to Low</option>
+            <option value="created-descending">Newest</option>
+          </select>
+        </div>
+        
+        <div class="filter-tags">
+          {% for tag in collection.all_tags %}
+            <button class="filter-tag" onclick="filterByTag('{{ tag }}')">
+              {{ tag }}
+            </button>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="collection-products">
+    <div class="container">
+      {% if collection.products.size > 0 %}
+        <div class="products-grid">
+          {% for product in collection.products %}
+            <div class="product-card" data-tags="{{ product.tags | join: ',' }}">
+              {% if product.metafields.custom.step_number %}
+                <div class="step-number">{{ product.metafields.custom.step_number }}</div>
+              {% endif %}
+              
+              {% if product.compare_at_price > product.price %}
+                {% assign discount = product.compare_at_price | minus: product.price | times: 100 | divided_by: product.compare_at_price %}
+                <div class="product-badge">Save {{ discount }}%</div>
+              {% endif %}
+              
+              <div class="product-image">
+                <a href="{{ product.url }}">
+                  <img src="{{ product.featured_image | image_url: width: 400 }}" alt="{{ product.title }}">
+                </a>
+              </div>
+              
+              <div class="product-info">
+                <div class="product-header">
+                  <h3 class="product-title">
+                    <a href="{{ product.url }}">{{ product.title }}</a>
+                  </h3>
+                </div>
+                
+                <p class="product-description">{{ product.description | strip_html | truncate: 120 }}</p>
+                
+                <div class="product-price">
+                  <span class="price-current">{{ product.price | money }}</span>
+                  {% if product.compare_at_price > product.price %}
+                    <span class="price-original">{{ product.compare_at_price | money }}</span>
+                  {% endif %}
+                </div>
+                
+                <div class="product-rating">
+                  {% assign rating = product.metafields.custom.average_rating | default: 5 %}
+                  {% for i in (1..5) %}
+                    {% if i <= rating %}
+                      <svg class="star star-filled" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                      </svg>
+                    {% else %}
+                      <svg class="star" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                      </svg>
+                    {% endif %}
+                  {% endfor %}
+                  <span class="rating-count">({{ product.metafields.custom.review_count | default: 127 }})</span>
+                </div>
+                
+                <a href="{{ product.url }}" class="btn btn-primary">View Product</a>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+        
+        {% if paginate.pages > 1 %}
+          <nav class="pagination" role="navigation" aria-label="Pagination">
+            {% if paginate.previous %}
+              <a href="{{ paginate.previous.url }}" class="pagination-link">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="15,18 9,12 15,6"></polyline>
+                </svg>
+                Previous
+              </a>
+            {% endif %}
+            
+            {% for part in paginate.parts %}
+              {% if part.is_link %}
+                <a href="{{ part.url }}" class="pagination-link">{{ part.title }}</a>
+              {% else %}
+                {% if part.title == paginate.current_page %}
+                  <span class="pagination-link current">{{ part.title }}</span>
+                {% else %}
+                  <span class="pagination-link">{{ part.title }}</span>
+                {% endif %}
+              {% endif %}
+            {% endfor %}
+            
+            {% if paginate.next %}
+              <a href="{{ paginate.next.url }}" class="pagination-link">
+                Next
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="9,18 15,12 9,6"></polyline>
+                </svg>
+              </a>
+            {% endif %}
+          </nav>
+        {% endif %}
+      {% else %}
+        <div class="empty-collection">
+          <h2>No products found</h2>
+          <p>This collection is currently empty.</p>
+          <a href="{{ routes.root_url }}" class="btn btn-primary">Continue Shopping</a>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<script>
+function sortProducts(sortOption) {
+  const url = new URL(window.location);
+  url.searchParams.set('sort_by', sortOption);
+  window.location = url;
+}
+
+function filterByTag(tag) {
+  const products = document.querySelectorAll('.product-card');
+  const filterButtons = document.querySelectorAll('.filter-tag');
+  
+  // Toggle active state on filter button
+  event.target.classList.toggle('active');
+  
+  // Get all active filters
+  const activeFilters = Array.from(document.querySelectorAll('.filter-tag.active'))
+    .map(btn => btn.textContent.trim());
+  
+  products.forEach(product => {
+    const productTags = product.dataset.tags.split(',');
+    const hasActiveFilter = activeFilters.length === 0 || 
+      activeFilters.some(filter => productTags.includes(filter));
+    
+    product.style.display = hasActiveFilter ? 'block' : 'none';
+  });
+}
+</script>
+
+{% endpaginate %}

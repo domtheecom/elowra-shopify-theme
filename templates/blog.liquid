@@ -1,0 +1,101 @@
+{% paginate blog.articles by 6 %}
+
+<div class="blog-page">
+  <div class="blog-header">
+    <div class="container">
+      <h1 class="blog-title">{{ blog.title }}</h1>
+      {% if blog.summary != blank %}
+        <p class="blog-description">{{ blog.summary }}</p>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="blog-content">
+    <div class="container">
+      {% if blog.articles.size > 0 %}
+        <div class="articles-grid">
+          {% for article in blog.articles %}
+            <article class="article-card">
+              {% if article.image %}
+                <div class="article-image">
+                  <a href="{{ article.url }}">
+                    <img src="{{ article.image | image_url: width: 400 }}" alt="{{ article.title }}">
+                  </a>
+                </div>
+              {% endif %}
+              
+              <div class="article-content">
+                <div class="article-meta">
+                  <time datetime="{{ article.published_at | date: '%Y-%m-%d' }}">
+                    {{ article.published_at | date: '%B %d, %Y' }}
+                  </time>
+                  {% if article.tags.size > 0 %}
+                    <div class="article-tags">
+                      {% for tag in article.tags limit: 2 %}
+                        <span class="tag">{{ tag }}</span>
+                      {% endfor %}
+                    </div>
+                  {% endif %}
+                </div>
+                
+                <h2 class="article-title">
+                  <a href="{{ article.url }}">{{ article.title }}</a>
+                </h2>
+                
+                <div class="article-excerpt">
+                  {{ article.excerpt | strip_html | truncate: 150 }}
+                </div>
+                
+                <div class="article-footer">
+                  <span class="read-time">{{ article.content | strip_html | split: ' ' | size | divided_by: 200 | plus: 1 }} min read</span>
+                  <a href="{{ article.url }}" class="read-more">Read More →</a>
+                </div>
+              </div>
+            </article>
+          {% endfor %}
+        </div>
+        
+        {% if paginate.pages > 1 %}
+          <nav class="pagination" role="navigation" aria-label="Pagination">
+            {% if paginate.previous %}
+              <a href="{{ paginate.previous.url }}" class="pagination-link">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="15,18 9,12 15,6"></polyline>
+                </svg>
+                Previous
+              </a>
+            {% endif %}
+            
+            {% for part in paginate.parts %}
+              {% if part.is_link %}
+                <a href="{{ part.url }}" class="pagination-link">{{ part.title }}</a>
+              {% else %}
+                {% if part.title == paginate.current_page %}
+                  <span class="pagination-link current">{{ part.title }}</span>
+                {% else %}
+                  <span class="pagination-link">{{ part.title }}</span>
+                {% endif %}
+              {% endif %}
+            {% endfor %}
+            
+            {% if paginate.next %}
+              <a href="{{ paginate.next.url }}" class="pagination-link">
+                Next
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="9,18 15,12 9,6"></polyline>
+                </svg>
+              </a>
+            {% endif %}
+          </nav>
+        {% endif %}
+      {% else %}
+        <div class="empty-blog">
+          <h2>No articles yet</h2>
+          <p>Check back soon for skincare tips and updates!</p>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+{% endpaginate %}

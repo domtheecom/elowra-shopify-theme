@@ -1,0 +1,140 @@
+<section class="testimonials-section">
+  <div class="testimonials-container">
+    <div class="section-header">
+      <h2 class="section-title">{{ section.settings.title }}</h2>
+    </div>
+
+    <div class="testimonials-grid">
+      {% for block in section.blocks %}
+        <div class="testimonial-card">
+          <div class="testimonial-rating">
+            {% for i in (1..5) %}
+              {% if i <= block.settings.rating %}
+                <svg class="star star-filled" width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                </svg>
+              {% else %}
+                <svg class="star" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                </svg>
+              {% endif %}
+            {% endfor %}
+          </div>
+          
+          <blockquote class="testimonial-content">
+            "{{ block.settings.content }}"
+          </blockquote>
+          
+          <div class="testimonial-author">
+            {% if block.settings.image %}
+              <img src="{{ block.settings.image | image_url: width: 60 }}" alt="{{ block.settings.name }}" class="author-image">
+            {% endif %}
+            <div class="author-info">
+              <cite class="author-name">{{ block.settings.name }}</cite>
+              <div class="author-meta">
+                {% if block.settings.verified %}
+                  <span class="verified-badge"></span>
+                {% endif %}
+                <span class="author-details">{{ block.settings.skin_type }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Testimonials",
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Section Title",
+      "default": "What Our Customers Say"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "testimonial",
+      "name": "Testimonial",
+      "settings": [
+        {
+          "type": "textarea",
+          "id": "content",
+          "label": "Testimonial Text"
+        },
+        {
+          "type": "text",
+          "id": "name",
+          "label": "Customer Name"
+        },
+        {
+          "type": "text",
+          "id": "skin_type",
+          "label": "Skin Type"
+        },
+        {
+          "type": "range",
+          "id": "rating",
+          "min": 1,
+          "max": 5,
+          "step": 1,
+          "label": "Rating",
+          "default": 5
+        },
+        {
+          "type": "checkbox",
+          "id": "verified",
+          "label": "Verified Purchase",
+          "default": true
+        },
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Customer Photo"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Testimonials",
+      "blocks": [
+        {
+          "type": "testimonial",
+          "settings": {
+            "content": "This skincare routine has completely transformed my sensitive skin. No more redness or irritation!",
+            "name": "Sarah M.",
+            "skin_type": "Sensitive, Dry",
+            "rating": 5,
+            "verified": true
+          }
+        },
+        {
+          "type": "testimonial",
+          "settings": {
+            "content": "Finally found products that work with my allergies. The gentle formula is perfect for my skin type.",
+            "name": "Emma L.",
+            "skin_type": "Allergy-prone",
+            "rating": 5,
+            "verified": true
+          }
+        },
+        {
+          "type": "testimonial",
+          "settings": {
+            "content": "The 3-step ritual is so simple but incredibly effective. My skin has never looked better!",
+            "name": "Jessica R.",
+            "skin_type": "Combination, Sensitive",
+            "rating": 5,
+            "verified": true
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}
