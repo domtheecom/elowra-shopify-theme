@@ -1,3 +1,12 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
 {
   "current": {
     "color_sage_primary": "#4A5D23",
@@ -15,13 +24,6 @@
       },
       "footer": {
         "type": "footer",
-        "settings": {
-          "column1_title": "About ELOWRA",
-          "column1_content": "<p>Premium skincare for sensitive skin. Our 3-step ritual transforms your skin with gentle, effective formulations.</p>",
-          "column2_title": "Quick Links",
-          "column3_title": "Contact",
-          "column3_content": "hello@elowra.com\n(555) 123-4567"
-        },
         "blocks": {
           "link1": {
             "type": "link",
@@ -31,7 +33,7 @@
             }
           },
           "link2": {
-            "type": "link", 
+            "type": "link",
             "settings": {
               "text": "FAQ",
               "url": "/pages/faq"
@@ -45,8 +47,105 @@
             }
           }
         },
-        "block_order": ["link1", "link2", "link3"]
+        "block_order": [
+          "link1",
+          "link2",
+          "link3"
+        ],
+        "settings": {
+          "column1_title": "About ELOWRA",
+          "column1_content": "<p>Premium skincare for sensitive skin. Our 3-step ritual transforms your skin with gentle, effective formulations.</p>",
+          "column2_title": "Quick Links",
+          "column3_title": "Contact",
+          "column3_content": "hello@elowra.com\n(555) 123-4567"
+        }
+      },
+      "hero": {
+        "type": "hero",
+        "settings": {
+          "title_line1": "Naturally Radiant.",
+          "title_line2": "Powerfully Gentle.",
+          "subtitle": "The 3-step skincare ritual for sensitive, dry, and allergy-prone skin.",
+          "button1_text": "Subscribe Now",
+          "button1_link": "",
+          "button2_text": "See What's Inside",
+          "button2_link": ""
+        }
+      },
+      "trust-badges": {
+        "type": "trust-badges",
+        "blocks": {
+          "badge_7BbKkE": {
+            "type": "badge",
+            "settings": {
+              "icon": "",
+              "title": "",
+              "description": ""
+            }
+          },
+          "badge_qbYqpR": {
+            "type": "badge",
+            "settings": {
+              "icon": "",
+              "title": "",
+              "description": ""
+            }
+          },
+          "badge_JXLdUE": {
+            "type": "badge",
+            "settings": {
+              "icon": "",
+              "title": "",
+              "description": ""
+            }
+          },
+          "badge_MDWETk": {
+            "type": "badge",
+            "settings": {
+              "icon": "",
+              "title": "",
+              "description": ""
+            }
+          }
+        },
+        "block_order": [
+          "badge_7BbKkE",
+          "badge_qbYqpR",
+          "badge_JXLdUE",
+          "badge_MDWETk"
+        ],
+        "settings": {
+          "title": "Why Choose ELOWRA?"
+        }
+      },
+      "featured-products": {
+        "type": "featured-products",
+        "settings": {
+          "title": "The 3-Step Ritual",
+          "subtitle": "Discover our carefully curated skincare system designed for your unique needs.",
+          "collection": "",
+          "products_to_show": 3,
+          "show_view_all": true,
+          "button_text": "View Complete Kit"
+        }
+      },
+      "testimonials": {
+        "type": "testimonials",
+        "settings": {
+          "title": "What Our Customers Say"
+        }
+      },
+      "newsletter": {
+        "type": "newsletter",
+        "settings": {
+          "title": "Join the Glow List",
+          "subtitle": "Get skincare tips, exclusive offers, and be the first to know about new products.",
+          "placeholder": "Enter your email address",
+          "button_text": "Subscribe",
+          "success_message": "Thanks for subscribing! You'll hear from us soon."
+        }
       }
-    }
+    },
+    "content_for_index": []
   }
 }
